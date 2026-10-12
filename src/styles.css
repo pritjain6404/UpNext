@@ -406,6 +406,52 @@ footer {
   background: #e6edc1;
 }
 
+.calendar-card {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding: 24px;
+}
+
+.calendar-card h2 {
+  margin-bottom: 6px;
+}
+
+.calendar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.calendar-actions button,
+.calendar-actions .button-link {
+  margin-top: 0;
+}
+
+.calendar-connected {
+  margin: 0;
+  color: #245a22;
+  font-weight: 750;
+}
+
+.calendar-events {
+  display: grid;
+  gap: 8px;
+}
+
+.calendar-events article {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 0;
+  border-top: 1px solid #c7c8bd;
+}
+
+.calendar-events span {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
 .billing h2 {
   margin: 0 0 6px;
 }
