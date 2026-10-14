@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { clearCookie, composioFetch, configured, cookie, cookieHeader } from "../_composio";
+import { clearCookie, composioFetch, configured, cookie, cookieHeader } from "../_composio.js";
 
 type ComposioRequest = (path: string, init: RequestInit) => Promise<Response>;
 
