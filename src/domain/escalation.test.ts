@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { acknowledge, cancel, reconcile } from "./escalation";
+import { acknowledge, cancel, reconcile, retryLastStep } from "./escalation";
 import type { Reminder } from "./reminder";
 const base: Reminder = { id: "1", title: "Test", scheduledAt: 1_000, category: "critical", userPhone: "+15550100", emergencyContact: { name: "Alex", phone: "+15550101", verified: true }, consent: true, state: "pending", completedSteps: [], createdAt: 0 };
 describe("escalation engine", () => {
@@ -19,5 +19,15 @@ describe("escalation engine", () => {
     let reminder = { ...base, consent: false };
     for (const now of [1_000, 11_000, 41_000]) reminder = reconcile(reminder, now).reminder;
     expect(reconcile(reminder, 71_000).reminder.state).toBe("blocked");
+  });
+  it("does not compress overdue steps into consecutive ticks", () => {
+    let reminder = reconcile(base, 100_000).reminder;
+    expect(reminder.completedSteps).toEqual(["notification"]);
+    reminder = reconcile(reminder, 100_001).reminder;
+    expect(reminder.completedSteps).toEqual(["notification", "alarm"]);
+  });
+  it("makes a failed alert retryable", () => {
+    const failed = { ...reconcile(base, 1_000).reminder, lastError: "Failed" };
+    expect(retryLastStep(failed)).toMatchObject({ completedSteps: [], lastError: undefined });
   });
 });

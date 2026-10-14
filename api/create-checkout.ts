@@ -29,6 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const response = await fetch(`${getDodoHost()}/checkouts`, {
       method: "POST",
+      signal: AbortSignal.timeout(10_000),
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",

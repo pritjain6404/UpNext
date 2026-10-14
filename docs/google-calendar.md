@@ -18,6 +18,11 @@ The Composio callback URL for the production deployment is:
 
 `https://pritjain6404-probable-system.vercel.app/api/composio/callback`
 
+In Composio, open **Settings → General → Configuration** and set this URL as
+the project's callback identity verifier. UpNext redeems Composio's single-use
+`session_uri` for the configured `COMPOSIO_USER_ID`; it no longer trusts a
+connected-account ID supplied by the browser.
+
 If you use a custom OAuth configuration, register that callback URL in the
 configuration. With Composio-managed OAuth, use the callback URL requested by
 the Composio dashboard and keep the UpNext callback as the post-connection

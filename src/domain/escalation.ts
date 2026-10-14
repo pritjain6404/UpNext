@@ -16,7 +16,7 @@ export function reconcile(reminder: Reminder, now: number): Transition {
   const preset = PRESETS[reminder.category];
   for (const [index, step] of ORDER.entries()) {
     if (reminder.completedSteps.includes(step)) continue;
-    const prior = reminder.scheduledAt + ORDER.slice(0, index).reduce((sum, key) => sum + preset.delays[key], 0);
+    const prior = reminder.scheduledAt + ORDER.slice(0, index + 1).reduce((sum, key) => sum + preset.delays[key], 0);
     if (now < prior) return { reminder };
     if (step === "emergency-call" && (!reminder.consent || !reminder.emergencyContact.verified)) {
       return { reminder: { ...reminder, state: "blocked", lastError: "Emergency contact consent and verification are required." }, blockedReason: "Emergency contact safeguards are incomplete." };
@@ -37,4 +37,8 @@ export function acknowledge(reminder: Reminder): Reminder {
 }
 export function cancel(reminder: Reminder): Reminder {
   return { ...reminder, state: "cancelled", graceEndsAt: undefined };
+}
+
+export function retryLastStep(reminder: Reminder): Reminder {
+  return { ...reminder, completedSteps: reminder.completedSteps.slice(0, -1), lastError: undefined };
 }
