@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from "vitest";
-import { loadCalendarEvents, ownsConnectedAccount } from "./events";
+import { loadCalendarEvents, ownsConnectedAccount } from "./events.js";
 
 describe("Composio calendar contract", () => {
   it("executes the documented tool path and normalizes timed and all-day events", async () => {
