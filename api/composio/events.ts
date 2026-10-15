@@ -20,6 +20,7 @@ export async function loadCalendarEvents(connectedAccountId: string, now = Date.
     method: "POST",
     body: JSON.stringify({
       connected_account_id: connectedAccountId,
+      user_id: process.env.COMPOSIO_USER_ID,
       version: "latest",
       arguments: {
         calendarId: "primary",
@@ -31,8 +32,8 @@ export async function loadCalendarEvents(connectedAccountId: string, now = Date.
       },
     }),
   });
-  const payload = (await response.json()) as { successful?: boolean; data?: { items?: ComposioEvent[] } | string; error?: string; message?: string; code?: string };
-  if (!response.ok) console.error("Composio event tool HTTP failure", response.status, payload.code, payload.error ?? payload.message);
+  const payload = (await response.json()) as { successful?: boolean; data?: { items?: ComposioEvent[] } | string; error?: string };
+  if (!response.ok) console.error("Composio event tool HTTP failure", response.status);
   if (!response.ok || payload.successful !== true) {
     if (response.ok) console.error("Composio event tool reported failure");
     throw new Error(payload.error ?? "Composio could not load calendar events.");

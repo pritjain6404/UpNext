@@ -4,6 +4,7 @@ import { loadCalendarEvents, ownsConnectedAccount } from "./events.js";
 
 describe("Composio calendar contract", () => {
   it("executes the documented tool path and normalizes timed and all-day events", async () => {
+    process.env.COMPOSIO_USER_ID = "owner";
     const request = vi.fn().mockResolvedValue(new Response(JSON.stringify({
       successful: true,
       data: { items: [
@@ -17,7 +18,7 @@ describe("Composio calendar contract", () => {
       { id: "all-day", title: "Holiday", startsAt: "2026-10-15", endsAt: "2026-10-16" },
     ]);
     expect(request).toHaveBeenCalledWith("/tools/execute/GOOGLECALENDAR_EVENTS_LIST", expect.objectContaining({ method: "POST" }));
-    expect(JSON.parse(request.mock.calls[0][1].body)).toMatchObject({ connected_account_id: "ca_owner", version: "latest", arguments: { calendarId: "primary" } });
+    expect(JSON.parse(request.mock.calls[0][1].body)).toMatchObject({ connected_account_id: "ca_owner", user_id: "owner", version: "latest", arguments: { calendarId: "primary" } });
   });
 
   it("rejects an HTTP 200 tool failure", async () => {
