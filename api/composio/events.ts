@@ -7,7 +7,10 @@ type ComposioRequest = (path: string, init: RequestInit) => Promise<Response>;
 export async function ownsConnectedAccount(connectedAccountId: string, request: ComposioRequest = composioFetch) {
   if (!/^[A-Za-z0-9_-]+$/.test(connectedAccountId)) return false;
   const response = await request(`/connected_accounts/${connectedAccountId}`, { method: "GET" });
-  if (!response.ok) throw new Error("Composio account lookup failed.");
+  if (!response.ok) {
+    console.error("Composio account lookup failed", response.status);
+    throw new Error("Composio account lookup failed.");
+  }
   const account = (await response.json()) as { user_id?: string; userId?: string; status?: string };
   return (account.user_id ?? account.userId) === process.env.COMPOSIO_USER_ID && account.status === "ACTIVE";
 }
