@@ -1,6 +1,15 @@
 // @vitest-environment node
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { completeComposioConnection, handleComposioCallback } from "./callback.js";
+import { newBrowserUser } from "../_composio.js";
+
+beforeEach(() => Object.assign(process.env, { COMPOSIO_API_KEY: "key", COMPOSIO_AUTH_CONFIG_ID: "config", COMPOSIO_REDIRECT_URI: "https://example.test/api/composio/callback", UPNEXT_SESSION_SECRET: "a-long-test-secret-for-cookie-signing" }));
+afterEach(() => { delete process.env.UPNEXT_SESSION_SECRET; });
+
+function browserCookies() {
+  const user = newBrowserUser();
+  return { user, cookie: `upnext_user=${user.token}; upnext_composio_link=ca_owner` };
+}
 
 function responseRecorder() {
   const result = { statusCode: 200, body: undefined as unknown, redirect: "", headers: {} as Record<string, unknown> };
@@ -39,7 +48,6 @@ describe("completeComposioConnection", () => {
   });
 
   it("rejects a callback that was not initiated by this browser", async () => {
-    Object.assign(process.env, { COMPOSIO_API_KEY: "key", COMPOSIO_AUTH_CONFIG_ID: "config", COMPOSIO_USER_ID: "owner", COMPOSIO_REDIRECT_URI: "https://example.test/api/composio/callback" });
     const { result, response } = responseRecorder();
     const request = vi.fn();
     await handleComposioCallback({ method: "GET", headers: {}, query: { session_uri: "session" } } as never, response, request);
@@ -48,39 +56,39 @@ describe("completeComposioConnection", () => {
   });
 
   it("sets the account cookie only after completing a marked callback", async () => {
-    Object.assign(process.env, { COMPOSIO_API_KEY: "key", COMPOSIO_AUTH_CONFIG_ID: "config", COMPOSIO_USER_ID: "owner", COMPOSIO_REDIRECT_URI: "https://example.test/api/composio/callback" });
+    const { user, cookie } = browserCookies();
     const { result, response } = responseRecorder();
     const request = vi.fn()
       .mockResolvedValueOnce(new Response(JSON.stringify({ connected_account_id: "ca_owner" }), { status: 200 }))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ user_id: "owner", status: "ACTIVE", auth_config: { id: "config" } }), { status: 200 }));
-    await handleComposioCallback({ method: "GET", headers: { cookie: "upnext_composio_link=ca_owner" }, query: { session_uri: "session" } } as never, response, request);
+      .mockResolvedValueOnce(new Response(JSON.stringify({ user_id: user.id, status: "ACTIVE", auth_config: { id: "config" } }), { status: 200 }));
+    await handleComposioCallback({ method: "GET", headers: { cookie }, query: { session_uri: "session" } } as never, response, request);
     expect(result.redirect).toBe("/?calendar=connected");
     expect(result.headers["Set-Cookie"]).toEqual(expect.arrayContaining([expect.stringContaining("upnext_composio_account=ca_owner"), expect.stringContaining("upnext_composio_link=; Max-Age=0")]));
   });
 
   it("accepts a normal hosted-link callback only for the account this browser started", async () => {
-    Object.assign(process.env, { COMPOSIO_API_KEY: "key", COMPOSIO_AUTH_CONFIG_ID: "config", COMPOSIO_USER_ID: "owner", COMPOSIO_REDIRECT_URI: "https://example.test/api/composio/callback" });
+    const { user, cookie } = browserCookies();
     const { result, response } = responseRecorder();
-    const request = vi.fn().mockResolvedValue(new Response(JSON.stringify({ user_id: "owner", status: "ACTIVE", auth_config: { id: "config" } }), { status: 200 }));
-    await handleComposioCallback({ method: "GET", headers: { cookie: "upnext_composio_link=ca_owner" }, query: { status: "success", connected_account_id: "ca_owner" } } as never, response, request);
+    const request = vi.fn().mockResolvedValue(new Response(JSON.stringify({ user_id: user.id, status: "ACTIVE", auth_config: { id: "config" } }), { status: 200 }));
+    await handleComposioCallback({ method: "GET", headers: { cookie }, query: { status: "success", connected_account_id: "ca_owner" } } as never, response, request);
     expect(result.redirect).toBe("/?calendar=connected");
     expect(request).toHaveBeenCalledWith("/connected_accounts/ca_owner", { method: "GET" });
   });
 
   it("rejects a callback for a different account without contacting Composio", async () => {
-    Object.assign(process.env, { COMPOSIO_API_KEY: "key", COMPOSIO_AUTH_CONFIG_ID: "config", COMPOSIO_USER_ID: "owner", COMPOSIO_REDIRECT_URI: "https://example.test/api/composio/callback" });
+    const { cookie } = browserCookies();
     const { result, response } = responseRecorder();
     const request = vi.fn();
-    await handleComposioCallback({ method: "GET", headers: { cookie: "upnext_composio_link=ca_owner" }, query: { status: "success", connected_account_id: "ca_other" } } as never, response, request);
+    await handleComposioCallback({ method: "GET", headers: { cookie }, query: { status: "success", connected_account_id: "ca_other" } } as never, response, request);
     expect(result.redirect).toBe("/?calendar=failed");
     expect(request).not.toHaveBeenCalled();
   });
 
   it("rejects an account outside the configured user and auth config", async () => {
-    Object.assign(process.env, { COMPOSIO_API_KEY: "key", COMPOSIO_AUTH_CONFIG_ID: "config", COMPOSIO_USER_ID: "owner", COMPOSIO_REDIRECT_URI: "https://example.test/api/composio/callback" });
+    const { cookie } = browserCookies();
     const { result, response } = responseRecorder();
     const request = vi.fn().mockResolvedValue(new Response(JSON.stringify({ user_id: "another", status: "ACTIVE", auth_config: { id: "config" } }), { status: 200 }));
-    await handleComposioCallback({ method: "GET", headers: { cookie: "upnext_composio_link=ca_owner" }, query: { status: "success", connected_account_id: "ca_owner" } } as never, response, request);
+    await handleComposioCallback({ method: "GET", headers: { cookie }, query: { status: "success", connected_account_id: "ca_owner" } } as never, response, request);
     expect(result.redirect).toBe("/?calendar=failed");
     expect(result.headers["Set-Cookie"]).toBeUndefined();
   });

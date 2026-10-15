@@ -71,6 +71,13 @@ h2 {
   font-size: 1.1rem;
 }
 
+.browser-note {
+  max-width: 510px;
+  margin: 16px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   color: var(--ink);
