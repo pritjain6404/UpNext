@@ -1,15 +1,15 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { composioFetch, configured, cookie } from "../_composio";
+import { browserUser, composioFetch, configured, cookie } from "../_composio.js";
 
 type ComposioEvent = { id?: string; summary?: string; start?: { dateTime?: string; date?: string }; end?: { dateTime?: string; date?: string } };
 type ComposioRequest = (path: string, init: RequestInit) => Promise<Response>;
 
-export async function ownsConnectedAccount(connectedAccountId: string, request: ComposioRequest = composioFetch) {
+export async function ownsConnectedAccount(connectedAccountId: string, userId: string, request: ComposioRequest = composioFetch) {
   if (!/^[A-Za-z0-9_-]+$/.test(connectedAccountId)) return false;
   const response = await request(`/connected_accounts/${connectedAccountId}`, { method: "GET" });
   if (!response.ok) throw new Error("Composio account lookup failed.");
   const account = (await response.json()) as { user_id?: string; userId?: string; status?: string };
-  return (account.user_id ?? account.userId) === process.env.COMPOSIO_USER_ID && account.status === "ACTIVE";
+  return (account.user_id ?? account.userId) === userId && account.status === "ACTIVE";
 }
 
 export async function loadCalendarEvents(connectedAccountId: string, now = Date.now(), request: ComposioRequest = composioFetch) {
@@ -42,10 +42,12 @@ export async function loadCalendarEvents(connectedAccountId: string, now = Date.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed." });
   if (!configured()) return res.status(503).json({ error: "Composio Calendar is not configured on this deployment." });
+  const user = browserUser(req);
+  if (!user) return res.status(401).json({ error: "Connect Google Calendar first." });
   const connectedAccountId = cookie(req, "upnext_composio_account");
   if (!connectedAccountId) return res.status(401).json({ error: "Connect Google Calendar first." });
   try {
-    if (!await ownsConnectedAccount(connectedAccountId)) {
+    if (!await ownsConnectedAccount(connectedAccountId, user.id)) {
       return res.status(401).json({ error: "Reconnect Google Calendar." });
     }
     return res.status(200).json({ events: await loadCalendarEvents(connectedAccountId) });

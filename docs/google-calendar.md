@@ -20,7 +20,7 @@ The Composio callback URL for the production deployment is:
 
 In Composio, open **Settings → General → Configuration** and set this URL as
 the project's callback identity verifier. UpNext redeems Composio's single-use
-`session_uri` for the configured `COMPOSIO_USER_ID`; it no longer trusts a
+`session_uri` for a signed, browser-specific UpNext identity; it no longer trusts a
 connected-account ID supplied by the browser.
 
 If you use a custom OAuth configuration, register that callback URL in the
@@ -37,16 +37,15 @@ and add these values for **Production**:
 | --- | --- |
 | `COMPOSIO_API_KEY` | Your Composio project API key |
 | `COMPOSIO_AUTH_CONFIG_ID` | The Google Calendar auth config ID, often `ac_...` |
-| `COMPOSIO_USER_ID` | A stable UpNext user identifier, for example `upnext-owner` |
 | `COMPOSIO_REDIRECT_URI` | `https://pritjain6404-probable-system.vercel.app/api/composio/callback` |
+| `UPNEXT_SESSION_SECRET` | A random server-only secret of at least 32 bytes for signing browser identities |
 
 Never use a `VITE_` prefix for these variables. Do not paste the API key into
 chat, source files, or screenshots.
 
-The current app does not yet have user accounts. Therefore, the first version
-uses the configured `COMPOSIO_USER_ID` for the deployment owner. Before opening
-the app to multiple users, replace this with the authenticated UpNext user's
-ID; otherwise all users would share one Composio connection.
+The current app does not have user accounts. Each browser gets its own signed
+identity and Composio connection. Clearing cookies disconnects that browser;
+the same connection will not follow a person to another device.
 
 ## 3. Redeploy and connect
 
@@ -67,5 +66,4 @@ edit, or delete Google Calendar events.
   deployment was not redeployed.
 - **Connection failed:** verify the auth config supports Google Calendar OAuth
   and that the callback/return URL is configured in Composio.
-- **No events:** only timed events in the primary calendar and the next 30 days
-  are shown; all-day events are intentionally excluded.
+- **No events:** check the primary calendar for events in the next 30 days.

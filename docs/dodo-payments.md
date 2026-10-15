@@ -12,7 +12,7 @@ Vercel project:
 - `VITE_DODO_PRODUCT_ID`: the product ID used to show the upgrade action in the UI.
 - `DODO_PAYMENTS_PRODUCT_ID`: the same product ID, read only by the server function.
 - `DODO_PAYMENTS_API_KEY`: a test-mode key while validating the integration.
-- `DODO_PAYMENTS_ENVIRONMENT`: `test_mode` or `live_mode`.
+- `DODO_PAYMENTS_ENVIRONMENT`: `test_mode`. The checkout endpoint rejects live mode until real fulfillment is built.
 - `DODO_PAYMENTS_RETURN_URL`: the HTTPS URL followed by `?checkout=success`.
 - `DODO_PAYMENTS_CANCEL_URL`: the HTTPS URL followed by `?checkout=cancelled`.
 - `DODO_PAYMENTS_WEBHOOK_KEY`: the signing secret for `/api/dodo/webhook`.
@@ -24,7 +24,8 @@ Both return URLs are required by the server function; it does not trust request
 origins or hosts as redirect destinations.
 
 The integration intentionally keeps payment credentials server-side and uses Dodo's
-hosted checkout rather than collecting card details in UpNext.
+hosted checkout rather than collecting card details in UpNext. The current UI is a
+test checkout only; it does not claim to unlock paid features.
 
 ## Webhook safety
 

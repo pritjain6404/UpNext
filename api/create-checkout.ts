@@ -3,15 +3,17 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 type CheckoutResponse = { checkout_url?: string; session_id?: string };
 
 function getDodoHost() {
-  return process.env.DODO_PAYMENTS_ENVIRONMENT === "live_mode"
-    ? "https://live.dodopayments.com"
-    : "https://test.dodopayments.com";
+  return "https://test.dodopayments.com";
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed." });
+  }
+
+  if (process.env.DODO_PAYMENTS_ENVIRONMENT !== "test_mode") {
+    return res.status(503).json({ error: "Only Dodo test checkout is available." });
   }
 
   const apiKey = process.env.DODO_PAYMENTS_API_KEY;

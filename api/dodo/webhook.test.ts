@@ -2,7 +2,7 @@
 import { createHmac } from "node:crypto";
 import { Readable } from "node:stream";
 import { afterEach, describe, expect, it } from "vitest";
-import handler, { PayloadTooLargeError, readRawBody, verifyDodoWebhook } from "./webhook";
+import handler, { PayloadTooLargeError, readRawBody, verifyDodoWebhook } from "./webhook.js";
 
 const secret = `whsec_${Buffer.from("test-secret").toString("base64")}`;
 
