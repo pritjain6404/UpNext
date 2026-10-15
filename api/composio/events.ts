@@ -31,8 +31,8 @@ export async function loadCalendarEvents(connectedAccountId: string, now = Date.
       },
     }),
   });
-  if (!response.ok) console.error("Composio event tool HTTP failure", response.status);
-  const payload = (await response.json()) as { successful?: boolean; data?: { items?: ComposioEvent[] } | string; error?: string };
+  const payload = (await response.json()) as { successful?: boolean; data?: { items?: ComposioEvent[] } | string; error?: string; message?: string; code?: string };
+  if (!response.ok) console.error("Composio event tool HTTP failure", response.status, payload.code, payload.error ?? payload.message);
   if (!response.ok || payload.successful !== true) {
     if (response.ok) console.error("Composio event tool reported failure");
     throw new Error(payload.error ?? "Composio could not load calendar events.");
