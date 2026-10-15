@@ -15,3 +15,16 @@ test("restores a connected calendar when the page is reopened", async ({ page })
   await expect(page.getByText("Team review")).toBeVisible();
   await expect(page.getByText("Google Calendar connected.")).toBeVisible();
 });
+
+test("shows a calendar sync failure instead of an empty card", async ({ page }) => {
+  await page.route("**/api/composio/events", (route) =>
+    route.fulfill({
+      status: 502,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "Composio could not load Google Calendar. Try connecting again." }),
+    }),
+  );
+
+  await page.goto("/?calendar=connected");
+  await expect(page.getByRole("alert")).toHaveText("Composio could not load Google Calendar. Try connecting again.");
+});

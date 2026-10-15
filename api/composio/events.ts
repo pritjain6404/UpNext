@@ -19,7 +19,7 @@ export async function loadCalendarEvents(connectedAccountId: string, now = Date.
       connected_account_id: connectedAccountId,
       version: "latest",
       arguments: {
-        calendar_id: "primary",
+        calendarId: "primary",
         timeMin: new Date(now).toISOString(),
         timeMax: new Date(now + 30 * 24 * 60 * 60 * 1000).toISOString(),
         maxResults: 25,

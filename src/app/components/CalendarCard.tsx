@@ -7,7 +7,7 @@ export function CalendarCard() {
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const state = new URLSearchParams(window.location.search).get("calendar");
-  const [connected, setConnected] = useState(state === "connected");
+  const [connected, setConnected] = useState(false);
 
   async function sync() {
     setLoading(true);
@@ -49,6 +49,7 @@ export function CalendarCard() {
       {state === "not-configured" && <p className="errors" role="alert">Google Calendar is not configured on this deployment yet.</p>}
       {state === "failed" && <p className="errors" role="alert">Google Calendar connection was not completed. Try again.</p>}
       {connected && <p className="calendar-connected" role="status">Google Calendar connected.</p>}
+      {status && <p className="errors" role="alert">{status}</p>}
       <div className="calendar-actions">
         <a className="button-link" href="/api/composio/auth">Connect Google Calendar</a>
         {connected && <button type="button" className="secondary" onClick={() => void sync()} disabled={loading}>{loading ? "Syncing…" : "Sync now"}</button>}
