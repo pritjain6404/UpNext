@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { randomUUID } from "node:crypto";
-import { configured, composioFetch, cookieHeader, redirectUri } from "../_composio";
+import { configured, composioFetch, cookieHeader, redirectUri } from "../_composio.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed." });
@@ -14,10 +13,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         callback_url: redirectUri(),
       }),
     });
-    const payload = (await response.json()) as { redirect_url?: string; redirectUrl?: string; error?: string };
+    const payload = (await response.json()) as { redirect_url?: string; redirectUrl?: string; connected_account_id?: string; error?: string };
     const url = payload.redirect_url ?? payload.redirectUrl;
-    if (!response.ok || !url) throw new Error(payload.error ?? "Composio could not start authorization.");
-    res.setHeader("Set-Cookie", cookieHeader("upnext_composio_link", randomUUID(), 10 * 60));
+    if (!response.ok || !url || !payload.connected_account_id) throw new Error(payload.error ?? "Composio could not start authorization.");
+    res.setHeader("Set-Cookie", cookieHeader("upnext_composio_link", payload.connected_account_id, 10 * 60));
     return res.redirect(url);
   } catch {
     return res.redirect("/?calendar=failed");

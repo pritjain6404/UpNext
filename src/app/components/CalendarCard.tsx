@@ -7,17 +7,25 @@ export function CalendarCard() {
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const state = new URLSearchParams(window.location.search).get("calendar");
+  const [connected, setConnected] = useState(false);
 
   async function sync() {
     setLoading(true);
     setStatus(null);
     try {
       const response = await fetch("/api/composio/events");
+      if (response.status === 401) {
+        setConnected(false);
+        setEvents([]);
+        setStatus(state === "connected" ? "Reconnect Google Calendar to see events." : null);
+        return;
+      }
       const payload = (await response.json()) as { events?: CalendarEvent[]; error?: string };
       if (!response.ok) {
         setStatus(payload.error ?? "Calendar events could not be loaded.");
         return;
       }
+      setConnected(true);
       setEvents(payload.events ?? []);
       setStatus(payload.events?.length ? null : "No events found in the next 30 days.");
     } catch {
@@ -28,7 +36,7 @@ export function CalendarCard() {
   }
 
   useEffect(() => {
-    if (state === "connected") void sync();
+    if (state !== "failed" && state !== "not-configured") void sync();
   }, [state]);
 
   return (
@@ -40,10 +48,11 @@ export function CalendarCard() {
       </div>
       {state === "not-configured" && <p className="errors" role="alert">Google Calendar is not configured on this deployment yet.</p>}
       {state === "failed" && <p className="errors" role="alert">Google Calendar connection was not completed. Try again.</p>}
-      {state === "connected" && <p className="calendar-connected" role="status">Google Calendar connected.</p>}
+      {connected && <p className="calendar-connected" role="status">Google Calendar connected.</p>}
+      {status && <p className="errors" role="alert">{status}</p>}
       <div className="calendar-actions">
         <a className="button-link" href="/api/composio/auth">Connect Google Calendar</a>
-        {state === "connected" && <button type="button" className="secondary" onClick={() => void sync()} disabled={loading}>{loading ? "Syncing…" : "Sync now"}</button>}
+        {connected && <button type="button" className="secondary" onClick={() => void sync()} disabled={loading}>{loading ? "Syncing…" : "Sync now"}</button>}
       </div>
       {events.length > 0 && <div className="calendar-events">{events.map((event) => <article key={event.id ?? `${event.title}-${event.startsAt}`}><strong>{event.title}</strong><span>{new Date(event.startsAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</span></article>)}</div>}
     </section>
