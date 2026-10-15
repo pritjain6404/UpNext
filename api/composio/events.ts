@@ -31,8 +31,12 @@ export async function loadCalendarEvents(connectedAccountId: string, now = Date.
       },
     }),
   });
+  if (!response.ok) console.error("Composio event tool HTTP failure", response.status);
   const payload = (await response.json()) as { successful?: boolean; data?: { items?: ComposioEvent[] } | string; error?: string };
-  if (!response.ok || payload.successful !== true) throw new Error(payload.error ?? "Composio could not load calendar events.");
+  if (!response.ok || payload.successful !== true) {
+    if (response.ok) console.error("Composio event tool reported failure");
+    throw new Error(payload.error ?? "Composio could not load calendar events.");
+  }
   const data = typeof payload.data === "string" ? JSON.parse(payload.data) as { items?: ComposioEvent[] } : payload.data;
   return (data?.items ?? []).filter((event) => event.start?.dateTime || event.start?.date).map((event) => ({
     id: event.id,
