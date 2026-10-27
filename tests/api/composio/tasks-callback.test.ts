@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, expect, it, vi } from "vitest";
-import { accountCookie, connectedAccountIds, pendingLinkCookie } from "../_account-cookies.js";
-import { handleTasksCallback } from "./tasks-callback.js";
+import { accountCookie, connectedAccountIds, pendingLinkCookie } from "../../../api/_account-cookies.js";
+import { handleTasksCallback } from "../../../api/composio/tasks-callback.js";
 
 function responseRecorder() {
   const result = { status: 200, body: undefined as unknown, redirect: "", cookies: [] as string[] };

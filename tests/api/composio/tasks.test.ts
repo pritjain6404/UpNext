@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from "vitest";
-import { loadGoogleTasks, serveGoogleTasks } from "./tasks.js";
-import { accountCookie } from "../_account-cookies.js";
+import { loadGoogleTasks, serveGoogleTasks } from "../../../api/composio/tasks.js";
+import { accountCookie } from "../../../api/_account-cookies.js";
 
 describe("Google Tasks read-only contract", () => {
   it("lists open tasks across every task list and reports truncation", async () => {

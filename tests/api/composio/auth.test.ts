@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from "vitest";
-import handler from "./auth.js";
-import { pendingLinkAccountId } from "../_account-cookies.js";
+import handler from "../../../api/composio/auth.js";
+import { pendingLinkAccountId } from "../../../api/_account-cookies.js";
 
 afterEach(() => vi.unstubAllGlobals());
 

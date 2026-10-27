@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from "vitest";
-import handler from "./create-checkout.js";
+import handler from "../../api/create-checkout.js";
 
 afterEach(() => {
   delete process.env.DODO_PAYMENTS_ENVIRONMENT;

@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { accountCookie, connectedAccountIds, pendingLinkAccountId, pendingLinkCookie } from "./_account-cookies.js";
+import { accountCookie, connectedAccountIds, pendingLinkAccountId, pendingLinkCookie } from "../../api/_account-cookies.js";
 
 function request(value?: string) {
   return { headers: { cookie: value ? `upnext_calendar_accounts=${value}` : "" } } as never;

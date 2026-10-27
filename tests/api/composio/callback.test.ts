@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from "vitest";
-import { completeComposioConnection, handleComposioCallback } from "./callback.js";
-import { accountCookie, connectedAccountIds, pendingLinkCookie } from "../_account-cookies.js";
+import { completeComposioConnection, handleComposioCallback } from "../../../api/composio/callback.js";
+import { accountCookie, connectedAccountIds, pendingLinkCookie } from "../../../api/_account-cookies.js";
 
 function responseRecorder() {
   const result = { statusCode: 200, body: undefined as unknown, redirect: "", headers: {} as Record<string, unknown> };

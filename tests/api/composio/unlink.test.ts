@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, expect, it } from "vitest";
-import { accountCookie, connectedAccountIds } from "../_account-cookies.js";
-import unlink from "./unlink.js";
+import { accountCookie, connectedAccountIds } from "../../../api/_account-cookies.js";
+import unlink from "../../../api/composio/unlink.js";
 
 function responseRecorder() {
   const result = { status: 200, body: undefined as unknown, cookie: "" };
