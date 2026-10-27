@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from "vitest";
 import handler from "./auth.js";
+import { pendingLinkAccountId } from "../_account-cookies.js";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -20,7 +21,7 @@ describe("Composio auth link", () => {
     const { result, response } = responseRecorder();
     await handler({ method: "GET" } as never, response);
     expect(result.redirect).toBe("https://connect.composio.dev/link/ln_test");
-    expect(result.headers["Set-Cookie"]).toContain("upnext_composio_link=ca_owner");
+    expect(pendingLinkAccountId({ headers: { cookie: (result.headers["Set-Cookie"] as string).split(";")[0] } } as never, "calendar")).toBe("ca_owner");
   });
 
   it("rejects a link response without a connected account ID", async () => {

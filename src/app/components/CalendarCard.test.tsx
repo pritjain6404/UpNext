@@ -25,3 +25,15 @@ it("shows a calendar sync error to the user", async () => {
   expect(container.textContent).not.toContain("Google Calendar connected.");
   await act(async () => { root.unmount(); });
 });
+
+it("keeps the first account visible after a failed second connection", async () => {
+  window.history.replaceState({}, "", "/?calendar=failed");
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ events: [{ id: "one", title: "First account event", startsAt: "2026-10-20", account: "Account 1" }], failedAccounts: 0 }), { status: 200 })));
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  await act(async () => { root.render(createElement(CalendarCard)); });
+  expect(container.textContent).toContain("First account event");
+  expect(container.textContent).toContain("connection was not completed");
+  await act(async () => { root.unmount(); });
+});

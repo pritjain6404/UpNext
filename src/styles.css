@@ -157,6 +157,20 @@ h2 {
   text-align: right;
 }
 
+.permission-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.permission-controls button {
+  margin: 0;
+  padding: 7px 11px;
+  white-space: nowrap;
+  font-size: 0.76rem;
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
@@ -506,6 +520,12 @@ footer {
 
   .permission-card small {
     text-align: left;
+  }
+
+  .permission-controls {
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .layout {
