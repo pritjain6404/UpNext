@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
 test("explains browser-only reminder delivery", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Stay with what’s next." })).toBeVisible();
-  await expect(page.getByText(/Browser notification \+ your selected alarm sound/)).toBeVisible();
-  await expect(page.getByText(/Keep UpNext open/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Make room for what matters." })).toBeVisible();
+  await expect(page.getByText(/Browser notifications and your chosen alarm sound/)).toBeVisible();
+  await expect(page.getByText(/Keep TinkleMe open/)).toBeVisible();
 });
 
 test("schedules a reminder and restores it after reopening", async ({ page }) => {
@@ -14,7 +14,7 @@ test("schedules a reminder and restores it after reopening", async ({ page }) =>
   await page.getByRole("button", { name: "Schedule reminder" }).click();
   await expect(page.getByText("1 saved")).toBeVisible();
   await expect(page.getByText("Demo reminder")).toBeVisible();
-  await expect(page.getByText("Pulse")).toBeVisible();
+  await expect(page.locator(".reminder-row").getByText("Pulse")).toBeVisible();
 
   await page.reload();
   await expect(page.getByText("1 saved")).toBeVisible();

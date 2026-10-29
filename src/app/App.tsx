@@ -69,7 +69,7 @@ export function App() {
   const testNotification = () => {
     void requestNotifications().then((result) => {
       setNotification(result === "success" ? "granted" : result);
-      if (result === "success") notify("UpNext test", "Browser notifications are working.");
+      if (result === "success") notify("TinkleMe test", "Browser notifications are working.");
     }).catch(() => setNotification("denied"));
   };
   const create = (value: FormValue) => {
@@ -78,12 +78,27 @@ export function App() {
     void requestNotifications().then((result) => setNotification(result === "success" ? "granted" : result)).catch(() => setNotification("denied"));
   };
 
-  return <main><header className="hero"><div><p className="eyebrow">UPNEXT / RELIABLE RHYTHM</p><h1>Stay with what’s next.</h1><p className="lede">A calmer way to keep important moments in view.</p></div><div className="hero-orbit"><span>01</span><span>02</span><span>03</span><b>04</b></div></header>
+  return <main>
+    <header className="site-header">
+      <div className="brand"><span className="brand-mark" aria-hidden="true">T</span><span>TinkleMe</span></div>
+      <span className="header-note">A little more room to breathe</span>
+    </header>
+    <section className="hero" aria-labelledby="hero-title">
+      <div className="hero-copy">
+        <p className="eyebrow">YOUR DAY, IN A GENTLER RHYTHM</p>
+        <h1 id="hero-title">Make room for <em>what matters.</em></h1>
+        <p className="lede">Your events, tasks and reminders in one quiet place. Stay present for today, and ready for what comes next.</p>
+      </div>
+      <div className="hero-visual" aria-hidden="true">
+        <div className="hero-ring hero-ring-outer" />
+        <div className="hero-ring hero-ring-inner" />
+        <div className="hero-note"><span>ONE MOMENT AT A TIME</span><strong>Find your<br />flow.</strong><small>✳ TinkleMe</small></div>
+      </div>
+    </section>
     <PermissionStatus notification={notification} audio={audio} storage={storage} onTestNotification={testNotification} />
-    <CalendarCard />
-    <TasksCard />
+    <div className="integrations"><CalendarCard /><TasksCard /></div>
     {active && <ActiveReminder reminder={active} onAcknowledge={() => update((current) => current.map((item) => item.id === active.id ? acknowledge(item) : item))} onCancel={() => update((current) => current.map((item) => item.id === active.id ? cancel(item) : item))} onReplay={() => previewSound(active.sound)} />}
     <div className="layout"><ReminderForm onCreate={create} onPreview={previewSound} /><ReminderList reminders={reminders} /></div>
-    <footer>Browser notification + your selected alarm sound. Keep this tab open until the reminder is due.</footer>
+    <footer><span>TinkleMe</span><span>Browser notifications and your chosen alarm sound work while this tab stays open.</span></footer>
   </main>;
 }

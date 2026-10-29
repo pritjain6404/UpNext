@@ -26,5 +26,5 @@ test("shows a calendar sync failure instead of an empty card", async ({ page }) 
   );
 
   await page.goto("/?calendar=connected");
-  await expect(page.getByRole("alert")).toHaveText("Composio could not load Google Calendar. Try connecting again.");
+  await expect(page.getByRole("region", { name: "Bring your day into view." }).getByRole("alert")).toHaveText("Composio could not load Google Calendar. Try connecting again.");
 });

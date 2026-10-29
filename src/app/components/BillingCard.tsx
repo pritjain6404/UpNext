@@ -27,8 +27,8 @@ export function BillingCard() {
   return (
     <section className="billing card" aria-labelledby="billing-title">
       <div>
-        <p className="eyebrow">UPNEXT PRO</p>
-        <h2 id="billing-title">Try the UpNext checkout.</h2>
+        <p className="eyebrow">TINKLEME PRO</p>
+        <h2 id="billing-title">Try the TinkleMe checkout.</h2>
         <p className="muted">Test the monthly subscription flow with Dodo Payments. No real payment or Pro access is activated.</p>
       </div>
       {checkoutState === "success" && <p className="checkout-note" role="status">Test checkout returned. No Pro access has been activated.</p>}
