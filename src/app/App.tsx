@@ -10,7 +10,6 @@ import { ReminderForm, type FormValue } from "./components/ReminderForm";
 import { ReminderList } from "./components/ReminderList";
 import { ActiveReminder } from "./components/ActiveReminder";
 import { PermissionStatus } from "./components/PermissionStatus";
-import { BillingCard } from "./components/BillingCard";
 import { CalendarCard } from "./components/CalendarCard";
 import { TasksCard } from "./components/TasksCard";
 import "../styles.css";
@@ -83,7 +82,6 @@ export function App() {
     <PermissionStatus notification={notification} audio={audio} storage={storage} onTestNotification={testNotification} />
     <CalendarCard />
     <TasksCard />
-    <BillingCard />
     {active && <ActiveReminder reminder={active} onAcknowledge={() => update((current) => current.map((item) => item.id === active.id ? acknowledge(item) : item))} onCancel={() => update((current) => current.map((item) => item.id === active.id ? cancel(item) : item))} onReplay={() => previewSound(active.sound)} />}
     <div className="layout"><ReminderForm onCreate={create} onPreview={previewSound} /><ReminderList reminders={reminders} /></div>
     <footer>Browser notification + your selected alarm sound. Keep this tab open until the reminder is due.</footer>

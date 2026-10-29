@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import handler from "../../api/create-checkout.js";
 
 afterEach(() => {
+  delete process.env.VERCEL_ENV;
   delete process.env.DODO_PAYMENTS_ENVIRONMENT;
   delete process.env.DODO_PAYMENTS_API_KEY;
   delete process.env.DODO_PAYMENTS_PRODUCT_ID;
@@ -22,6 +23,24 @@ function responseRecorder() {
 }
 
 describe("create checkout", () => {
+  it("does not offer even test checkout on Production", async () => {
+    process.env.VERCEL_ENV = "production";
+    process.env.DODO_PAYMENTS_ENVIRONMENT = "test_mode";
+    process.env.DODO_PAYMENTS_API_KEY = "test-key";
+    process.env.DODO_PAYMENTS_PRODUCT_ID = "prod_test";
+    process.env.DODO_PAYMENTS_RETURN_URL = "https://example.com/?checkout=success";
+    process.env.DODO_PAYMENTS_CANCEL_URL = "https://example.com/?checkout=cancelled";
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { result, response } = responseRecorder();
+    await handler({ method: "POST" } as never, response);
+
+    expect(result.statusCode).toBe(503);
+    expect(result.body).toEqual({ error: "Checkout is not available on Production." });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("refuses live checkout while UpNext only supports test checkout", async () => {
     process.env.DODO_PAYMENTS_ENVIRONMENT = "live_mode";
     process.env.DODO_PAYMENTS_API_KEY = "live-key";

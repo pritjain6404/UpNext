@@ -12,6 +12,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed." });
   }
 
+  if (process.env.VERCEL_ENV === "production") {
+    return res.status(503).json({ error: "Checkout is not available on Production." });
+  }
+
   if (process.env.DODO_PAYMENTS_ENVIRONMENT !== "test_mode") {
     return res.status(503).json({ error: "Only Dodo test checkout is available." });
   }

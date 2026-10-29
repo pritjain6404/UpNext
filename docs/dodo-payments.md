@@ -1,5 +1,7 @@
 # Dodo Payments setup
 
+This integration is retained for Preview testing only. The free public launch does not show checkout, and `/api/create-checkout` refuses requests when `VERCEL_ENV=production`. Do not configure a Live Mode key or enable the production webhook until paid benefits, user accounts, and durable entitlement fulfillment are implemented.
+
 UpNext uses Dodo Payments Checkout Sessions. The browser calls the Vercel function at
 `/api/create-checkout`; the function creates a fresh hosted checkout session with the
 server-side API key and redirects the customer to Dodo's checkout.
