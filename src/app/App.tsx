@@ -12,6 +12,7 @@ import { ActiveReminder } from "./components/ActiveReminder";
 import { PermissionStatus } from "./components/PermissionStatus";
 import { CalendarCard } from "./components/CalendarCard";
 import { TasksCard } from "./components/TasksCard";
+import { AnalyticsConsent } from "./components/AnalyticsConsent";
 import "../styles.css";
 
 function createReminder(value: FormValue): Reminder {
@@ -98,7 +99,8 @@ export function App() {
     <PermissionStatus notification={notification} audio={audio} storage={storage} onTestNotification={testNotification} />
     <div className="integrations"><CalendarCard /><TasksCard /></div>
     {active && <ActiveReminder reminder={active} onAcknowledge={() => update((current) => current.map((item) => item.id === active.id ? acknowledge(item) : item))} onCancel={() => update((current) => current.map((item) => item.id === active.id ? cancel(item) : item))} onReplay={() => previewSound(active.sound)} />}
-    <div className="layout"><ReminderForm onCreate={create} onPreview={previewSound} /><ReminderList reminders={reminders} /></div>
+    <div className="layout" data-clarity-mask="true"><ReminderForm onCreate={create} onPreview={previewSound} /><ReminderList reminders={reminders} /></div>
     <footer><span>TinkleMe</span><span>Browser notifications and your chosen alarm sound work while this tab stays open.</span></footer>
+    <AnalyticsConsent />
   </main>;
 }

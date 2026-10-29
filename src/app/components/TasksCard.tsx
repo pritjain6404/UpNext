@@ -65,7 +65,7 @@ export function TasksCard() {
     }
   }
 
-  return <section className="calendar-card card" aria-labelledby="tasks-title">
+  return <section className="calendar-card card" aria-labelledby="tasks-title" data-clarity-mask="true">
     <div><p className="eyebrow">YOUR TASKS</p><h2 id="tasks-title">Everything on your list.</h2><p className="muted">Open Google Tasks from every connected account and task list. Read-only. Connect each account in this browser.</p></div>
     {state === "not-configured" && <p className="errors" role="alert">Google Tasks is not configured on this deployment yet.</p>}
     {state === "failed" && <p className="errors" role="alert">Google Tasks connection was not completed. Try again.</p>}

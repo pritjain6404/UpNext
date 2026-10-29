@@ -60,7 +60,7 @@ export function CalendarCard() {
   }
 
   return (
-    <section className="calendar-card card" aria-labelledby="calendar-title">
+    <section className="calendar-card card" aria-labelledby="calendar-title" data-clarity-mask="true">
       <div>
         <p className="eyebrow">YOUR CALENDAR</p>
         <h2 id="calendar-title">Bring your day into view.</h2>

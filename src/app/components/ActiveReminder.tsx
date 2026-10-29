@@ -10,7 +10,7 @@ export function ActiveReminder({ reminder, onAcknowledge, onCancel, onReplay }: 
 }) {
   const panel = useRef<HTMLElement>(null);
   useEffect(() => { panel.current?.focus(); }, [reminder.id]);
-  return <section ref={panel} tabIndex={-1} className="active card" aria-live="assertive">
+  return <section ref={panel} tabIndex={-1} className="active card" aria-live="assertive" data-clarity-mask="true">
     <div className="active-head"><div><p className="eyebrow">Reminder due</p><h2>{reminder.title}</h2></div><span className="pill">Now</span></div>
     <p className="step-copy">Browser alert · {SOUND_LABELS[reminder.sound]} alarm selected.</p>
     {reminder.lastError && <p className="errors" role="alert">{reminder.lastError}</p>}
