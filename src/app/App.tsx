@@ -69,10 +69,11 @@ export function App() {
   const previewSound = (sound: AlarmSound) => { void playAlarm(sound).then((result) => setAudio(result === "success" ? "ready" : result)); };
   const testNotification = () => {
     void requestNotifications().then((result) => {
-      setNotification(result === "success" ? "granted" : result);
+      setNotification(result === "success" ? "granted" : result === "unsupported" ? result : Notification.permission);
       if (result === "success") notify("TinkleMe test", "Browser notifications are working.");
     }).catch(() => setNotification("denied"));
   };
+  const testSound = () => previewSound("chime");
   const create = (value: FormValue) => {
     void primeAudio().then((result) => setAudio(result === "success" ? "ready" : result));
     update((current) => [...current, createReminder(value)]);
@@ -96,7 +97,7 @@ export function App() {
         <div className="hero-note"><span>ONE MOMENT AT A TIME</span><strong>Find your<br />flow.</strong><small>✳ TinkleMe</small></div>
       </div>
     </section>
-    <PermissionStatus notification={notification} audio={audio} storage={storage} onTestNotification={testNotification} />
+    <PermissionStatus notification={notification} audio={audio} storage={storage} onTestNotification={testNotification} onTestSound={testSound} />
     <div className="integrations"><CalendarCard /><TasksCard /></div>
     {active && <ActiveReminder reminder={active} onAcknowledge={() => update((current) => current.map((item) => item.id === active.id ? acknowledge(item) : item))} onCancel={() => update((current) => current.map((item) => item.id === active.id ? cancel(item) : item))} onReplay={() => previewSound(active.sound)} />}
     <div className="layout" data-clarity-mask="true"><ReminderForm onCreate={create} onPreview={previewSound} /><ReminderList reminders={reminders} /></div>

@@ -231,11 +231,14 @@ h2 {
 .permission-controls {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 14px;
 }
 
 .permission-controls small { color: var(--ink-soft); font-size: 0.74rem; text-align: right; }
 .permission-controls button { margin: 0; white-space: nowrap; }
+.permission-controls .permission-button { min-height: 34px; padding: 6px 11px; font-size: 0.72rem; }
+.permission-controls .permission-help { flex-basis: 100%; text-align: left; }
 
 .integrations,
 .layout {
