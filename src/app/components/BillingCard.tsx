@@ -27,15 +27,15 @@ export function BillingCard() {
   return (
     <section className="billing card" aria-labelledby="billing-title">
       <div>
-        <p className="eyebrow">UPNEXT PRO</p>
-        <h2 id="billing-title">Keep more commitments in view.</h2>
-        <p className="muted">Unlock the full reminder workspace with a secure Dodo Payments checkout.</p>
+        <p className="eyebrow">TINKLEME PRO</p>
+        <h2 id="billing-title">Try the TinkleMe checkout.</h2>
+        <p className="muted">Test the monthly subscription flow with Dodo Payments. No real payment or Pro access is activated.</p>
       </div>
-      {checkoutState === "success" && <p className="checkout-note" role="status">Checkout returned. Payment confirmation is handled by Dodo webhook fulfillment.</p>}
-      {checkoutState === "cancelled" && <p className="checkout-note" role="status">Checkout cancelled. No payment was taken.</p>}
+      {checkoutState === "success" && <p className="checkout-note" role="status">Test checkout returned. No Pro access has been activated.</p>}
+      {checkoutState === "cancelled" && <p className="checkout-note" role="status">Test checkout cancelled. No payment was taken.</p>}
       {status && <p className="errors" role="alert">{status}</p>}
       <button type="button" className="secondary" onClick={openCheckout} disabled={!configured || isLoading}>
-        {!configured ? "Payments setup required" : isLoading ? "Opening secure checkout…" : "Upgrade with Dodo Payments"}
+        {!configured ? "Test checkout setup required" : isLoading ? "Opening test checkout…" : "Try test checkout"}
       </button>
       {!configured && <small className="muted">Set the public product ID and server-side Dodo credentials before enabling checkout.</small>}
     </section>

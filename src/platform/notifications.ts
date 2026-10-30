@@ -7,5 +7,6 @@ export async function requestNotifications(): Promise<AdapterResult> {
 }
 export function notify(title: string, body: string): AdapterResult {
   if (!("Notification" in window) || Notification.permission !== "granted") return "denied";
-  new Notification(title, { body }); return "success";
+  try { new Notification(title, { body }); return "success"; }
+  catch { return "denied"; }
 }
