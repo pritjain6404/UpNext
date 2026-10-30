@@ -1,6 +1,9 @@
 export type AnalyticsConsent = "granted" | "denied";
-export const ANALYTICS_CONSENT_KEY = "tinkleme.analytics-consent.v1";
+// A new consent version is required because the previous choice covered Clarity alone.
+export const ANALYTICS_CONSENT_KEY = "tinkleme.analytics-consent.v2";
 const SCRIPT_ID = "tinkleme-clarity";
+let posthogLoading: Promise<void> | null = null;
+let posthogClient: typeof import("posthog-js").default | null = null;
 
 type Clarity = ((...args: unknown[]) => void) & { q?: unknown[][] };
 declare global {
@@ -9,6 +12,41 @@ declare global {
 
 export function clarityIsConfigured(): boolean {
   return /^[a-z0-9]+$/i.test(import.meta.env.VITE_CLARITY_PROJECT_ID ?? "");
+}
+
+export function posthogIsConfigured(): boolean {
+  return /^phc_[a-z0-9]+$/i.test(import.meta.env.VITE_POSTHOG_PROJECT_TOKEN ?? "")
+    && ["https://us.i.posthog.com", "https://eu.i.posthog.com"].includes(import.meta.env.VITE_POSTHOG_HOST ?? "");
+}
+
+export function posthogIsLoaded(): boolean { return posthogClient !== null; }
+
+export function loadPostHog(): Promise<void> {
+  if (!posthogIsConfigured() || readAnalyticsConsent() !== "granted") return Promise.resolve();
+  if (posthogLoading) return posthogLoading;
+  posthogLoading = import("posthog-js").then(({ default: posthog }) => {
+    if (readAnalyticsConsent() !== "granted") { posthogLoading = null; return; }
+    posthog.init(import.meta.env.VITE_POSTHOG_PROJECT_TOKEN, {
+      api_host: import.meta.env.VITE_POSTHOG_HOST,
+      autocapture: false,
+      capture_pageview: false,
+      capture_pageleave: false,
+      capture_heatmaps: false,
+      capture_performance: false,
+      disable_session_recording: true,
+      disable_surveys: true,
+      advanced_disable_feature_flags: true,
+      person_profiles: "identified_only",
+      persistence: "memory",
+      before_send: (event) => event.event === "$pageview" ? {
+        ...event,
+        properties: { $current_url: `${window.location.origin}${window.location.pathname}` },
+      } : null,
+    });
+    posthogClient = posthog;
+    posthog.capture("$pageview", { $current_url: `${window.location.origin}${window.location.pathname}` });
+  }).catch(() => { posthogLoading = null; });
+  return posthogLoading;
 }
 
 export function readAnalyticsConsent(): AnalyticsConsent | null {
@@ -51,7 +89,8 @@ export function loadClarity(): void {
 
 export function revokeClarity(reload: (url?: string) => void = (url) => url ? window.location.replace(url) : window.location.reload()): void {
   const saved = writeAnalyticsConsent("denied");
-  const wasLoaded = Boolean(document.getElementById(SCRIPT_ID));
+  const wasLoaded = Boolean(document.getElementById(SCRIPT_ID)) || posthogIsLoaded();
+  posthogClient?.opt_out_capturing();
   window.clarity?.("consentv2", { analytics_Storage: "denied", ad_Storage: "denied" });
   // Clear both host-only and parent-domain first-party Clarity cookies.
   const hostParts = window.location.hostname.split(".");
