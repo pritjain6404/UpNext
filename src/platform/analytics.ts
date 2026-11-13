@@ -40,7 +40,11 @@ export function loadPostHog(): Promise<void> {
       persistence: "memory",
       before_send: (event) => event.event === "$pageview" ? {
         ...event,
-        properties: { $current_url: `${window.location.origin}${window.location.pathname}` },
+        properties: {
+          token: event.properties?.token,
+          distinct_id: event.properties?.distinct_id,
+          $current_url: `${window.location.origin}${window.location.pathname}`,
+        },
       } : null,
     });
     posthogClient = posthog;

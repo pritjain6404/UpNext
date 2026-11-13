@@ -60,7 +60,16 @@ it("captures only a sanitized pageview after consent", async () => {
   expect(posthog.init).toHaveBeenCalledOnce();
   const options = posthog.init.mock.calls[0][1];
   expect(options).toMatchObject({ autocapture: false, capture_pageview: false, capture_pageleave: false, disable_session_recording: true });
-  expect(options.before_send({ event: "$pageview", properties: { $current_url: window.location.href, secret: "private" } })).toMatchObject({ properties: { $current_url: window.location.origin + "/" } });
+  expect(options.before_send({ event: "$pageview", properties: {
+    token: "phc_testtoken",
+    distinct_id: "anonymous-visitor",
+    $current_url: window.location.href,
+    secret: "private",
+  } })).toEqual({ event: "$pageview", properties: {
+    token: "phc_testtoken",
+    distinct_id: "anonymous-visitor",
+    $current_url: window.location.origin + "/",
+  } });
   expect(options.before_send({ event: "$autocapture", properties: {} })).toBeNull();
   expect(posthog.capture).toHaveBeenCalledWith("$pageview", { $current_url: window.location.origin + "/" });
   const reload = vi.fn();
