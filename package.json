@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "posthog-js": "^1.443.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "standardwebhooks": "^1.1.1",

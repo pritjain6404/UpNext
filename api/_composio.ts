@@ -6,6 +6,10 @@ export function configured() {
   return Boolean(process.env.COMPOSIO_API_KEY && process.env.COMPOSIO_AUTH_CONFIG_ID && process.env.COMPOSIO_USER_ID && process.env.COMPOSIO_REDIRECT_URI);
 }
 
+export function tasksConfigured() {
+  return Boolean(process.env.COMPOSIO_API_KEY && process.env.COMPOSIO_TASKS_AUTH_CONFIG_ID && process.env.COMPOSIO_USER_ID && process.env.COMPOSIO_TASKS_REDIRECT_URI);
+}
+
 export function redirectUri() {
   return process.env.COMPOSIO_REDIRECT_URI!;
 }
